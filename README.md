@@ -4,4 +4,4 @@ Random collection of scripts useful for engagements, which don't really need the
 
 ## Contents
 
-* compcheck - Quick and dirty script to check Pre2K computers for default creds via a TGS (if SPN is present).
+* compcheck - Quick and dirty script to check Pre2K computers for default creds via a TGS.

