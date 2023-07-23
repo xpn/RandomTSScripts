@@ -8,6 +8,10 @@ If no SPN is provided (some newly created computer accounts don't have one set),
 
 ## Usage
 
+To use this tool you'll need a TGT for a user.. just use `getTGT.py` or something.
+
+Then set with `export KRB5CCNAME=myuser.ccache`.
+
 ```
 # Using an SPN
 python3 compcheck.py COMPUTER-NAME DOMAIN-NAME DC-IP SPN
