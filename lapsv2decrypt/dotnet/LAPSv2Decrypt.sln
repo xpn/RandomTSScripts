@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LAPSv2Decrypt", "LAPSv2Decrypt\LAPSv2Decrypt.csproj", "{A682F034-9BDF-445F-BE22-F9631E0A2DFB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A682F034-9BDF-445F-BE22-F9631E0A2DFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A682F034-9BDF-445F-BE22-F9631E0A2DFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A682F034-9BDF-445F-BE22-F9631E0A2DFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A682F034-9BDF-445F-BE22-F9631E0A2DFB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {23A9F54E-4659-446B-B729-E0C75F937637}
+	EndGlobalSection
+EndGlobal
